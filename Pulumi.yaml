@@ -1,0 +1,3 @@
+name: tailscale-vps
+runtime: nodejs
+description: Deploy a secure VPS with Tailscale pre-installed on AWS

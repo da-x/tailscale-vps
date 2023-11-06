@@ -1,0 +1,22 @@
+{
+    "name": "tailscale-vps",
+    "description": "Deploy a secure VPS with Tailscale pre-installed on AWS",
+    "main": "index.ts",
+    "type": "module",
+    "scripts": {
+        "deploy": "./deploy.sh up",
+        "destroy": "./deploy.sh down",
+        "status": "./deploy.sh status",
+        "local-deploy": "./deploy.sh local-up",
+        "local-destroy": "./deploy.sh local-down",
+        "local-status": "./deploy.sh local-status"
+    },
+    "devDependencies": {
+        "@types/node": "^16"
+    },
+    "dependencies": {
+        "@pulumi/aws": "^6.83.0",
+        "@pulumi/pulumi": "^3.181.0",
+        "pulumi": "^0.0.1"
+    }
+}

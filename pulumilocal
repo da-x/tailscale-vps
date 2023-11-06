@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Pulumi Local Backend Helper
+# This script configures Pulumi to use a local file backend instead of Pulumi Cloud
+# Useful for self-hosted state management and avoiding dependency on Pulumi Cloud
+
+set -e
+
+# Default configuration
+DEFAULT_BACKEND_DIR="${HOME}/.pulumi-local/tailscale-vps"
+DEFAULT_PASSPHRASE="tailscale-vps-local"
+
+# Create local backend directory
+mkdir -p "${DEFAULT_BACKEND_DIR}"
+
+# Set environment variables for local backend
+export PULUMI_CONFIG_PASSPHRASE="${PULUMI_CONFIG_PASSPHRASE:-$DEFAULT_PASSPHRASE}"
+export PULUMI_BACKEND_URL="file://${DEFAULT_BACKEND_DIR}"
+export PULUMI_HOME="${DEFAULT_BACKEND_DIR}"
+
+# Configure AWS region if not already set
+if [ -z "$AWS_REGION" ] && [ -z "$AWS_DEFAULT_REGION" ]; then
+    AWS_REGION="us-east-1"
+    export AWS_REGION
+fi
+
+# Set AWS region in Pulumi config if running pulumi config commands
+if [[ "$1" == "config" && "$2" == "set" && "$3" == "aws:region" ]]; then
+    # Skip setting aws:region if already being set
+    exec pulumi "$@"
+else
+    # Set AWS region in config
+    pulumi config set aws:region "${AWS_REGION}" 2>/dev/null || true
+fi
+
+echo "Using local backend: ${PULUMI_BACKEND_URL}"
+echo "State stored in: ${DEFAULT_BACKEND_DIR}"
+
+# Execute pulumi with provided arguments
+exec pulumi "$@"
